@@ -32,16 +32,20 @@ res = summarizer(5, 5)
 
 # Fn = Fn-1 + Fn-2
 @time_execution
-def fibonachi_row(n) -> int:
-    x = 0
-    y = 1
-    for i in range(n):
-        y = x + y
-        x = y - x
-    return y
+def fibonachi_list(n) -> int:
+    try:
+
+        x = 0
+        y = 1
+        for i in range(n):
+            yield x
+            y = x + y
+            x = y - x
+    except TypeError:
+        raise TypeError("ERROR! Iterator must be integer!")
 
 
-print(fibonachi_row(8))
+# print(list(fibonachi_list(8)))
 
 """
 3. Реализовать функцию, которая принимает три позиционных аргумента и возвращает сумму наибольших двух из них
@@ -59,5 +63,5 @@ def two_of_three(x, y, z):
     return a + b
 
 
-sum = two_of_three(35, 4, 66)
-print(sum)
+# sum = two_of_three(35, 4, 66)
+# print(sum)
