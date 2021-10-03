@@ -14,7 +14,6 @@ def time_execution(function):
         timer = (end - start).microseconds
         print(f"Время выполнения функции =  {timer} микросекунд")
         return result
-
     return inner
 
 
