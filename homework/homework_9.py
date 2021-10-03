@@ -12,27 +12,47 @@
 import datetime
 import multiprocessing
 import os
-import threading
-from multiprocessing import Process
-from threading import Thread
 
+
+# Comment for Nikolas Luchanos:
+# Я так и не смог добиться ускорения работы программы -> мне кажется что этому мешает GIL, так как фрозит
+# некоторые параметры. Может я неправ. Потратил на это очень много времени, но скорость не была увеличена.
+# Когда у себя запускал твой код из классной работы -> возникала ошибка:
+# RuntimeError:
+#         An attempt has been made to start a new process before the
+#         current process has finished its bootstrapping phase.
+#
+#         This probably means that you are not using fork to start your
+#         child processes and you have forgotten to use the proper idiom
+#         in the main module:
+#
+#             if __name__ == '__main__':
+#                 freeze_support()
+
+# Решается конструкцией:
+# if __name = '__main__':
+# С чем это связано? И как, все-таки, увеличить скорость выполнения программы?
 
 def time_execution(function):
     def inner(*args, **kwargs):
-        start = datetime.datetime.now()
+        start_time = datetime.datetime.now()
         result = function(*args, **kwargs)
-        end = datetime.datetime.now()
-        timer = (end - start).microseconds
-        print(f"Время выполнения функции =  {timer} микросекунд")
+        end_time = datetime.datetime.now()
+        stopwatch = (end_time - start_time).microseconds
+        print(f"Время выполнения функции =  {stopwatch} микросекунд")
         return result
 
     return inner
 
 
+@time_execution
 def list_of_numbers_function():
+    print(f"This function executing into process {os.getpid()}")
     list_of_numbers = list()
-    for x in range(5):
-        list_of_numbers.append(x)
+    number = 0
+    while number <= 100000000:
+        list_of_numbers.append(number)
+        number += 1
     return list_of_numbers
 
 
@@ -47,20 +67,19 @@ timer = (end - start).microseconds
 print(f"Время выполнения функции =  {timer} микросекунд")
 print("===============")
 
-
-
-print()
-print("***************")
-
-print(f"Process id is {os.getpid()}")
 start = datetime.datetime.now()
-p_0 = multiprocessing.Process(target=list_of_numbers_function, args=())
-
+# if __name__ == '__main__':
+p_0 = multiprocessing.Process(target=list_of_numbers_function)
+p_1 = multiprocessing.Process(target=list_of_numbers_function)
+p_2 = multiprocessing.Process(target=list_of_numbers_function)
 p_0.start()
+p_1.start()
+p_2.start()
 
 p_0.join()
+p_1.join()
+p_2.join()
 
 end = datetime.datetime.now()
 timer = (end - start).microseconds
 print(f"Время выполнения функции =  {timer} микросекунд")
-print("ˆˆˆˆˆˆˆˆˆˆˆˆ")
